@@ -17,6 +17,7 @@ public class ChatRoomFormDTO {
     private String lastMessage;
     private LocalDateTime time;
     private MemberEntity member;
+    private int messageNotice;
 
     public void makeChatRoomForm(String message, String anotherUser, LocalDateTime time) {
         this.lastMessage = message;

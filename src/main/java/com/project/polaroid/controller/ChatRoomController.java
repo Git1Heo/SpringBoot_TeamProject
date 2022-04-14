@@ -6,6 +6,7 @@ import com.project.polaroid.entity.ChatMessageEntity;
 import com.project.polaroid.entity.ChatRoomEntity;
 import com.project.polaroid.entity.ChatRoomJoinEntity;
 import com.project.polaroid.entity.MemberEntity;
+import com.project.polaroid.repository.NoticeRepository;
 import com.project.polaroid.service.ChatMessageService;
 import com.project.polaroid.service.ChatRoomJoinService;
 import com.project.polaroid.service.ChatRoomService;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChatRoomController {
 
+    private final NoticeRepository noticeRepository;
     private final MemberService memberService;
     private final ChatRoomJoinService chatRoomJoinService;
     private final ChatRoomService chatRoomService;
@@ -55,6 +57,13 @@ public class ChatRoomController {
         MemberEntity member = memberService.findByNickname(principalDetails.getMember().getMemberNickname());
         List<ChatRoomJoinEntity> chatRoomJoins = chatRoomJoinService.findByUser(member);
         List<ChatRoomFormDTO> chatRooms = chatRoomService.setting(chatRoomJoins,member);
+
+        // 채팅방 노티스
+        for(ChatRoomFormDTO c: chatRooms){
+                int count =noticeRepository.countRoom(principalDetails.getMember().getId(),c.getId());
+                c.setMessageNotice(count);
+        }
+
         model.addAttribute("chatRooms",chatRooms);
 
         model.addAttribute("nickname",principalDetails.getMember().getMemberNickname());
@@ -77,9 +86,9 @@ public class ChatRoomController {
     // 채팅방 생성
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN') or hasRole('ROLE_SELLER')" )
     @PostMapping("/chat/newChat")
-    public String newChat(@RequestParam("receiver") String user1, @RequestParam("sender") String user2){
+    public Long newChat(@RequestParam("receiver") String user1, @RequestParam("sender") String user2){
         Long chatRoomId = chatRoomJoinService.newRoom(user1,user2);
-        return "redirect:/personalChat/" + chatRoomId;
+        return chatRoomId;
     }
 
     // 채팅방 입장
@@ -154,6 +163,9 @@ public class ChatRoomController {
         model.addAttribute("nickname",principalDetails.getMember().getMemberNickname());
         model.addAttribute("profile",principalDetails.getMember().getMemberFilename());
         model.addAttribute("chatRoomId",chatRoomId);
+
+       chatMessageService.deleteCount(chatRoomId,principalDetails.getMember().getId());
+
         int cnt = 0;
         for (ChatRoomJoinEntity join : list){
             if (join.getMember().getMemberNickname().equals(principalDetails.getMember().getMemberNickname()) == false){

@@ -79,6 +79,21 @@
 .my_page_top_3_btn:hover {
     background-color: #bbbbbb;
 }
+
+.chatting_btn {
+    background-color: #EFEFEF;
+    border: 1px solid #ddd;
+    min-width: 60px;
+    height: 40px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 15px;
+}
+.chatting_btn:hover {
+    background-color: #bbbbbb !important;
+}
+
 .my_page_bottom_board_box {
     background-color: #efefef;
 }

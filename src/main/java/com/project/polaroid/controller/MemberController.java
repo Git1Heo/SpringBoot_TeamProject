@@ -221,7 +221,17 @@ public class MemberController {
     @GetMapping("/likeListShow")
     public String likeList(@AuthenticationPrincipal PrincipalDetails principalDetails,Model model){
         String s = mypageForm(principalDetails, model);
-        model.addAttribute("status",true);
+        model.addAttribute("status","like");
         return s;
     }
+
+    // hsw 3.13 좋아요 목록
+    @GetMapping("/pickListShow")
+    public String pickList(@AuthenticationPrincipal PrincipalDetails principalDetails,Model model){
+        String s = mypageForm(principalDetails, model);
+        model.addAttribute("status","pick");
+        return s;
+    }
+
+
 }
